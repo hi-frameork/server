@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "hi/helpers": "dev-main"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.68",

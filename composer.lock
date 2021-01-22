@@ -4,8 +4,68 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "665d41b11f6e7eb5cc55f9ce5adaece6",
-    "packages": [],
+    "content-hash": "21c2b60b9b9603c7a85b4916fb4990c8",
+    "packages": [
+        {
+            "name": "hi/helpers",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hi-frameork/helpers.git",
+                "reference": "7e5f186ff5eb7fc74c41398baa967b60a2b72927"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hi-frameork/helpers/zipball/7e5f186ff5eb7fc74c41398baa967b60a2b72927",
+                "reference": "7e5f186ff5eb7fc74c41398baa967b60a2b72927",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "nunomaduro/phpinsights": "^1.14",
+                "phpstan/phpstan": "^0.12.68",
+                "phpunit/phpunit": "^9.5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Hi\\Helpers\\": "src/"
+                },
+                "files": [
+                    "functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "热心网友",
+                    "email": "anoxia@engineer.com"
+                }
+            ],
+            "description": "Hi 框架 Helper 组件",
+            "keywords": [
+                "hi",
+                "hi-framework"
+            ],
+            "support": {
+                "issues": "https://github.com/hi-frameork/helpers/issues",
+                "source": "https://github.com/hi-frameork/helpers/tree/main"
+            },
+            "time": "2021-01-21T09:37:33+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "composer/ca-bundle",
@@ -4003,7 +4063,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "hi/helpers": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

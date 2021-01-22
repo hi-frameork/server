@@ -4,11 +4,31 @@ declare(strict_types=1);
 
 namespace Hi\Server;
 
-interface InterfaceServer
+interface ServerInterface
 {
+    /**
+     * 版本号
+     */
+    const VERSION = '0.0.1';
+
     /**
      * 在指定端口与地址启动监听
      * @return void
      */
-    public function listen(int $port = 8000, string $host = '127.0.0.1');
+    public function start(callable $handle, callable $taskHandle);
+
+    /**
+     * 重启服务
+     */
+    public function restart();
+
+    /**
+     * 停止服务
+     */
+    public function stop(bool $force = false);
+
+    /**
+     * 返回 Server 组件版本号
+     */
+    public function version(): string;
 }
