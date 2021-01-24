@@ -15,7 +15,8 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.68",
-        "nunomaduro/phpinsights": "^1.14"
+        "nunomaduro/phpinsights": "^1.14",
+        "swoole/ide-helper": "^4.6"
     },
     "suggest": {
         "ext-swoole": "使用 Swoole 获取更高地服务性能"

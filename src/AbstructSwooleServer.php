@@ -4,6 +4,20 @@ declare(strict_types=1);
 
 namespace Hi\Server;
 
-class AbstructSwooleServer implements ServerInterface
+abstract class AbstructSwooleServer implements ServerInterface
 {
+    abstract protected function createServer();
+
+    public function start(callable $handle, callable $taskHandle)
+    {
+    }
+
+    public function restart()
+    {
+    }
+
+    public function stop(bool $force = false)
+    {
+    }
 }
+

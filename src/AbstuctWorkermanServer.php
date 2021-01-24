@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Hi\Server;
 
-class AbstructWorkermanServer implements ServerInterface
+abstract class AbstructWorkermanServer implements ServerInterface
 {
 }

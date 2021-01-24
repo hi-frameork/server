@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Hi\Server;
 
-class AbstructFpmServer implements ServerInterface
+abstract class AbstructFpmServer implements ServerInterface
 {
 }
