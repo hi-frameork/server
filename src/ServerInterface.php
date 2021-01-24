@@ -7,6 +7,16 @@ namespace Hi\Server;
 interface ServerInterface
 {
     /**
+     * @var string
+     */
+    protected $host = '0.0.0.0';
+
+    /**
+     * @var int
+     */
+    protected $port = 8000;
+
+    /**
      * 版本号
      */
     const VERSION = '0.0.1';
