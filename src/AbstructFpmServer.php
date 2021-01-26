@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Hi\Server;
 
-abstract class AbstructFpmServer extends AbstructServer
+abstract class AbstructFpmServer extends AbstructBuiltInServer
 {
 }
