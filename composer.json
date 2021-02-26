@@ -11,11 +11,10 @@
     ],
     "require": {
         "php": ">=7.4",
-        "hi/helpers": "dev-main"
+        "hi/helpers": "^0.0.1"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.68",
-        "nunomaduro/phpinsights": "^1.14",
         "swoole/ide-helper": "^4.6"
     },
     "suggest": {
