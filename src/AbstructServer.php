@@ -1,10 +1,6 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Hi\Server;
-
-use function php_sapi_name;
 
 abstract class AbstructServer implements ServerInterface
 {

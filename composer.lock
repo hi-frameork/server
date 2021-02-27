@@ -4,60 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea88f812e313e3908d6285d8ce80021f",
-    "packages": [
-        {
-            "name": "hi/helpers",
-            "version": "v0.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hi-frameork/helpers.git",
-                "reference": "1fa92e826ee2c5388a01e2db18881ba733f7a8fc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hi-frameork/helpers/zipball/1fa92e826ee2c5388a01e2db18881ba733f7a8fc",
-                "reference": "1fa92e826ee2c5388a01e2db18881ba733f7a8fc",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.4"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^0.12.68",
-                "phpunit/phpunit": "^9.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Hi\\Helpers\\": "src/"
-                },
-                "files": [
-                    "functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "热心网友",
-                    "email": "anoxia@engineer.com"
-                }
-            ],
-            "description": "Hi 框架 Helper 组件",
-            "keywords": [
-                "hi",
-                "hi-framework"
-            ],
-            "support": {
-                "issues": "https://github.com/hi-frameork/helpers/issues",
-                "source": "https://github.com/hi-frameork/helpers/tree/v0.0.1"
-            },
-            "time": "2021-02-26T10:06:16+00:00"
-        }
-    ],
+    "content-hash": "0f02cb630f04d36f4185b2f7ab1c7aa2",
+    "packages": [],
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
@@ -71,7 +19,13 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/phpstan/phpstan/zipball/dd7769915648b704b9bd12925994457f1c2c8442",
                 "reference": "dd7769915648b704b9bd12925994457f1c2c8442",
-                "shasum": ""
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
             },
             "require": {
                 "php": "^7.1|^8.0"
@@ -131,7 +85,13 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/swoole/ide-helper/zipball/3292fef367a340ffd7b55ec806184d2268379d4a",
                 "reference": "3292fef367a340ffd7b55ec806184d2268379d4a",
-                "shasum": ""
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://mirrors.aliyun.com/composer/dists/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
             },
             "require-dev": {
                 "guzzlehttp/guzzle": "~6.5.0",
