@@ -12,56 +12,13 @@ abstract class AbstructServer implements ServerInterface
     /**
      * @var int
      */
-    protected $port = 8000;
+    protected $port = 9527;
 
     /**
-     * {@inheritDoc}
+     * 返回当前库版本号
      */
     public function version(): string
     {
         return static::VERSION;
-    }
-
-    /**
-     * 返回PHP可执行文件路径
-     *
-     * @return string|false
-     */
-    public function findPhpExecutable()
-    {
-        if ($php = getenv('PHP_BINARY')) {
-            if (!is_executable($php)) {
-                $command = '\\' === \DIRECTORY_SEPARATOR ? 'where' : 'command -v';
-                if ($php = strtok(exec($command.' '.escapeshellarg($php)), PHP_EOL)) {
-                    if (!is_executable($php)) {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
-            }
-
-            return $php;
-        }
-
-        if ($php = getenv('PHP_PATH')) {
-            if (!@is_executable($php)) {
-                return false;
-            }
-
-            return $php;
-        }
-
-        if ($php = getenv('PHP_PEAR_PHP_BIN')) {
-            if (@is_executable($php)) {
-                return $php;
-            }
-        }
-
-        if (@is_executable($php = PHP_BINDIR.('\\' === \DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {
-            return $php;
-        }
-
-        return false;
     }
 }
