@@ -13,7 +13,7 @@ interface ServerInterface
      * 在指定端口与地址启动监听
      * @return void
      */
-    public function start(callable $handle, callable $taskHandle);
+    public function start(callable $requestHandle);
 
     /**
      * 重启服务
