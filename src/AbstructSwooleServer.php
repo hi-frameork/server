@@ -4,10 +4,9 @@ namespace Hi\Server;
 
 abstract class AbstructSwooleServer extends AbstructServer
 {
-    abstract protected function createServer();
-
     public function start(callable $handle, callable $taskHandle)
     {
+        $swoole = $this->createServer();
     }
 
     public function restart()
@@ -17,5 +16,12 @@ abstract class AbstructSwooleServer extends AbstructServer
     public function stop(bool $force = false)
     {
     }
+
+    /**
+     * 返回 swoole server 实例
+     *
+     * @return \Swoole\Server
+     */
+    abstract protected function createServer();
 }
 
