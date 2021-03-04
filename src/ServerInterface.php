@@ -17,12 +17,12 @@ interface ServerInterface
     /**
      * 重启服务
      */
-    public function restart();
+    public function restart(): void;
 
     /**
      * 停止服务
      */
-    public function stop(bool $force = false);
+    public function stop(bool $force = false): void;
 
     /**
      * 返回 Server 组件版本号

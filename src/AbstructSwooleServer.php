@@ -11,7 +11,7 @@ abstract class AbstructSwooleServer extends AbstructServer
      */
     protected $swoole;
 
-    public function start(callable $handle, callable $taskHandle)
+    public function start(): void
     {
         $this->swoole = $this->createServer();
         $this->swoole->set($this->config['swoole']);
@@ -21,12 +21,22 @@ abstract class AbstructSwooleServer extends AbstructServer
         $this->swoole->start();
     }
 
-    public function restart()
-    {
+        $this->registerHandle();
+
+        $swoole->start();
     }
 
-    public function stop(bool $force = false)
+    public function registerHandle()
     {
+        $handles = get_class_methods($this);
+
+        foreach ($handles as $value) {
+            if ('on' == substr($value, 0, 2)) {
+                $this->swoole->on(lcfirst(substr($value, 2)), [$this, $value]);
+            }
+        }
+
+        return $this;
     }
 
     protected function registerHandle()

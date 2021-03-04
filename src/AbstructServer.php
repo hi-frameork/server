@@ -14,7 +14,7 @@ abstract class AbstructServer implements ServerInterface
     /**
      * @var int
      */
-    protected $port = 8000;
+    protected $port = 9527;
 
     /**
      * @var array
