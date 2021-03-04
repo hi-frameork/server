@@ -76,6 +76,14 @@ abstract class AbstructServer implements ServerInterface
             $this->name = $config['name'];
         }
 
+        if (! isset($config['swoole'])) {
+            $this->config['swoole'] = [];
+        }
+
+        if (! isset($config['workerman'])) {
+            $this->config['workerman'] = [];
+        }
+
         return $config;
     }
 
