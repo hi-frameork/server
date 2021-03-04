@@ -4,7 +4,7 @@ namespace Hi\Server;
 
 abstract class AbstructBuiltInServer extends AbstructServer
 {
-    protected function runServer()
+    protected function runHttpServer()
     {
         // 生成入口文件完整路径
         $separator     = DIRECTORY_SEPARATOR;
@@ -65,11 +65,11 @@ abstract class AbstructBuiltInServer extends AbstructServer
         return false;
     }
 
-    public function restart()
+    public function restart(): void
     {
     }
 
-    public function stop(bool $force = false)
+    public function stop(bool $force = false): void
     {
     }
 }
