@@ -48,11 +48,22 @@ abstract class AbstructServer implements ServerInterface
     }
 
     /**
+     * 注册请求处理回调
+     *
+     * @return static
+     */
+    public function withRequestHanle(callable $callback)
+    {
+        $this->handleRequest = $callback;
+        return $this;
+    }
+
+    /**
      * 检查端口，如果无效将会抛出异常
      *
      * @param int $port
      */
-    public function filterPort(int $port)
+    protected function filterPort(int $port)
     {
         if ($port < 1 || $port > 65535) {
             throw new InvalidArgumentException('端口无效，取值范围应在 (1-65535) 区间');
@@ -64,37 +75,16 @@ abstract class AbstructServer implements ServerInterface
      */
     protected function processConfig(array $config): array
     {
-        if (isset($config['host'])) {
-            $this->host = $config['host'];
-        }
+        // 从配置中提取公共参数，用于后续 server 的快速创建
+        $this->host = $config['host'] ?? $this->host;
+        $this->port = $config['port'] ?? $this->port;
+        $this->name = $config['name'] ?? $this->name;
 
-        if (isset($config['port'])) {
-            $this->port = $config['port'];
-        }
-
-        if (isset($config['name'])) {
-            $this->name = $config['name'];
-        }
-
-        if (! isset($config['swoole'])) {
-            $this->config['swoole'] = [];
-        }
-
-        if (! isset($config['workerman'])) {
-            $this->config['workerman'] = [];
-        }
+        // 对于不同 server 运行时，在配置中进行独立便于维护
+        // 如果为传入对应配置，则使用 server 默认配置
+        $config['swoole']    = $config['swoole'] ?? [];
+        $config['workerman'] = $config['workerman'] ?? [];
 
         return $config;
-    }
-
-    /**
-     * 注册请求处理回调
-     *
-     * @return static
-     */
-    public function withRequestHanle(callable $callback)
-    {
-        $this->handleRequest = $callback;
-        return $this;
     }
 }
