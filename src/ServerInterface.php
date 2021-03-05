@@ -12,7 +12,7 @@ interface ServerInterface
     /**
      * 在指定端口与地址启动监听
      */
-    public function start(): void;
+    public function start(int $port = 9527, string $host = '127.0.0.1'): void;
 
     /**
      * 重启服务

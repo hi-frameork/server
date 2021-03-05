@@ -8,14 +8,15 @@ abstract class AbstructSwooleServer extends AbstructServer
 
     abstract protected function createServer();
 
-    public function start(): void
+    public function start(int $port = 9527, string $host = '127.0.0.1'): void
     {
-        $swoole       = $this->createServer();
-        $this->swoole = $swoole;
+        $this->processPort($port);
+        $this->processHost($host);
+
+        $this->swoole = $this->createServer();
 
         $this->registerHandle();
-
-        $swoole->start();
+        $this->swoole->start();
     }
 
     public function registerHandle()
