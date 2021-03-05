@@ -4,12 +4,30 @@ namespace Hi\Server;
 
 abstract class AbstructBuiltInServer extends AbstructServer
 {
+    protected function runHttpServer()
+    {
+        // 生成入口文件完整路径
+        $separator     = DIRECTORY_SEPARATOR;
+        $entryFilePath = rtrim($_SERVER['PWD'], $separator) . $separator . ltrim($_SERVER['SCRIPT_FILENAME'], $separator);
+
+        // 拼接 PHP 内建 server 启动完整指令
+        $command = sprintf(
+            '%s -S %s:%s %s',
+            $this->phpExecutable(),
+            $this->host,
+            $this->port,
+            $entryFilePath
+        );
+
+        passthru($command, $status);
+    }
+
     /**
      * 返回PHP可执行文件路径
      *
      * @return string|false
      */
-    public function findPhpExecutable()
+    public function phpExecutable()
     {
         if ($php = getenv('PHP_BINARY')) {
             if (!is_executable($php)) {
@@ -45,5 +63,13 @@ abstract class AbstructBuiltInServer extends AbstructServer
         }
 
         return false;
+    }
+
+    public function restart(): void
+    {
+    }
+
+    public function stop(bool $force = false): void
+    {
     }
 }

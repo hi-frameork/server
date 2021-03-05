@@ -2,6 +2,32 @@
 
 namespace Hi\Server;
 
+use Workerman\Worker;
+
 abstract class AbstructWorkermanServer extends AbstructServer
 {
+    /**
+     * @var string
+     */
+    protected $socketName;
+
+    public function start(int $port = 9527, string $host = '127.0.0.1'): void
+    {
+        $this->processPort($port);
+        $this->processHost($host);
+
+        $this->socketName = "http://{$this->host}:{$this->port}";
+
+        $worker = new Worker($this->socketName);
+
+        $worker->onWorkerStart = [$this, 'onWorkerStart'];
+        $worker->onMessage = [$this, 'onMessage'];
+
+        Worker::runAll();
+    }
+
+    public function onWorkerStart()
+    {
+        echo "Workerman http server is started at {$this->socketName}\n";
+    }
 }

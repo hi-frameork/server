@@ -2,11 +2,14 @@
 
 namespace Hi\Server;
 
+use Swoole\Server;
+
 abstract class AbstructSwooleServer extends AbstructServer
 {
+    /**
+     * @var Server
+     */
     protected $swoole;
-
-    abstract protected function createServer();
 
     public function start(int $port = 9527, string $host = '127.0.0.1'): void
     {
@@ -19,7 +22,7 @@ abstract class AbstructSwooleServer extends AbstructServer
         $this->swoole->start();
     }
 
-    public function registerHandle()
+    protected function registerHandle()
     {
         $handles = get_class_methods($this);
 
@@ -31,5 +34,12 @@ abstract class AbstructSwooleServer extends AbstructServer
 
         return $this;
     }
+
+    /**
+     * 返回 swoole server 实例
+     *
+     * @return \Swoole\Server
+     */
+    abstract protected function createServer();
 }
 
