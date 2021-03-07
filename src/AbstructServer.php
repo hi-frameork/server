@@ -95,4 +95,12 @@ abstract class AbstructServer implements ServerInterface
 
         return $config;
     }
+
+    abstract protected function createServerRequest();
+
+    abstract protected function parseUploadFiles(): array;
+
+    abstract protected function parseBody(): array;
+
+    abstract protected function parseHeaders(): array;
 }
