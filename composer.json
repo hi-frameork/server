@@ -18,7 +18,8 @@
         "workerman/workerman": "^4.0"
     },
     "suggest": {
-        "ext-swoole": "使用 Swoole 获取更高地服务性能"
+        "ext-swoole": "使用 Swoole 获取更高性能",
+        "workerman/workerman": "以 Workerman 作为运行容器，提升服务性能"
     },
     "autoload": {
         "psr-4": {

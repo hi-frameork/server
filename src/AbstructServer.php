@@ -60,8 +60,10 @@ abstract class AbstructServer
 
     /**
      * 处理服务启动端口
+     *
+     * @return void
      */
-    protected function processPort(int $port): void
+    protected function processPort(int $port)
     {
         if ($port < 1 || $port > 65535) {
             throw new InvalidArgumentException('端口无效，取值范围应 1 ~ 65535 之间');
@@ -72,8 +74,10 @@ abstract class AbstructServer
 
     /**
      * 处理服务启动 host
+     *
+     * @return void
      */
-    protected function processHost(string $host): void
+    protected function processHost(string $host)
     {
         $this->host = $host;
     }
@@ -86,6 +90,8 @@ abstract class AbstructServer
         // 从配置中提取公共参数，用于后续 server 的快速创建
         $this->host = $config['host'] ?? $this->host;
         $this->port = $config['port'] ?? $this->port;
+
+        // 服务名称（用户设置 http 服务进程名）
         $this->name = $config['name'] ?? $this->name;
 
         // 对于不同 server 运行时，在配置中进行独立便于维护
@@ -96,5 +102,10 @@ abstract class AbstructServer
         return $config;
     }
 
+    /**
+     * 服务启动，所有子类均应在各自的方法体内执行服务实例启动
+     *
+     * @return void
+     */
     abstract public function start(int $port = 9527, string $host = '127.0.0.1');
 }

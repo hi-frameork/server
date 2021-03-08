@@ -2,24 +2,34 @@
 
 namespace Hi\Server;
 
+/**
+ * PHP 内建 Webserver 抽象类
+ * 为 HTTP、TCP、UDP 等服务提供基类方法
+ *
+ * 请注意：
+ *   此模式下运行容器只能用于本地开发时使用
+ *   因性能不佳，严禁在生产环境使用！
+ */
 abstract class AbstructBuiltInServer extends AbstructServer
 {
+    /**
+     * 在环境内 host 与 port 上启动内建 Webserver
+     *
+     * 相当于执行以下命令：
+     *  php -S 127.0.0.1:9527 entry.php
+     *
+     *  @return void
+     */
     protected function runHttpServer()
     {
-        // 生成入口文件完整路径
+        // 拼接入口文件完整路径
         $entryFilePath = rtrim($_SERVER['PWD'], DIRECTORY_SEPARATOR) 
             . DIRECTORY_SEPARATOR 
             . ltrim($_SERVER['SCRIPT_FILENAME'], DIRECTORY_SEPARATOR)
         ;
 
-        /**
-         * 拼接 PHP 内建 server 启动完整指令
-         *
-         * 命令输出示例(shell)：
-         *  /usr/bin/php -S 127.0.0.1:8000 entry.php
-         */
-        $command = sprintf(
-            '%s -S %s:%s %s',
+        // 拼接 PHP 内建 Webserver 启动指令
+        $command = sprintf('%s -S %s:%s %s',
             $this->phpExecutable(),
             $this->host,
             $this->port,
@@ -31,20 +41,19 @@ abstract class AbstructBuiltInServer extends AbstructServer
 
     /**
      * 返回PHP可执行文件路径
-     *
-     * @return string|false
+     * 如果无法确定 PHP 可执行文件路径，返回空字符串
      */
-    protected function phpExecutable()
+    protected function phpExecutable(): string
     {
         if ($php = getenv('PHP_BINARY')) {
             if (!is_executable($php)) {
                 $command = '\\' === \DIRECTORY_SEPARATOR ? 'where' : 'command -v';
                 if ($php = strtok(exec($command.' '.escapeshellarg($php)), PHP_EOL)) {
                     if (!is_executable($php)) {
-                        return false;
+                        return '';
                     }
                 } else {
-                    return false;
+                    return '';
                 }
             }
 
@@ -53,7 +62,7 @@ abstract class AbstructBuiltInServer extends AbstructServer
 
         if ($php = getenv('PHP_PATH')) {
             if (!@is_executable($php)) {
-                return false;
+                return '';
             }
 
             return $php;
@@ -69,6 +78,6 @@ abstract class AbstructBuiltInServer extends AbstructServer
             return $php;
         }
 
-        return false;
+        return '';
     }
 }

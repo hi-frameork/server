@@ -22,7 +22,7 @@ interface ServerInterface
     /**
      * 停止服务
      */
-    public function stop();
+    public function stop(bool $force = false);
 
     /**
      * 返回 Server 组件版本号

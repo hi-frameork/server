@@ -4,6 +4,9 @@ namespace Hi\Server;
 
 use Swoole\Server;
 
+/**
+ * Swoole 运行容器基类
+ */
 abstract class AbstructSwooleServer extends AbstructServer implements ServerInterface
 {
     /**
@@ -12,10 +15,18 @@ abstract class AbstructSwooleServer extends AbstructServer implements ServerInte
     protected $server;
 
     /**
+     * @var string
+     */
+    protected $pidFile;
+
+    /**
      * @var array
      */
     protected $eventHandle = [];
 
+    /**
+     * 启动 swoole 服务
+     */
     public function start(int $port = 9527, string $host = '127.0.0.1'): void
     {
         $this->processPort($port);
@@ -24,6 +35,7 @@ abstract class AbstructSwooleServer extends AbstructServer implements ServerInte
         $this->server = $this->createServer();
 
         $this->registerEventHandle();
+        $this->server->set($this->processSetting());
         $this->server->start();
     }
 
@@ -31,7 +43,7 @@ abstract class AbstructSwooleServer extends AbstructServer implements ServerInte
     {
     }
 
-    public function stop()
+    public function stop(bool $force = false)
     {
     }
 
@@ -44,8 +56,30 @@ abstract class AbstructSwooleServer extends AbstructServer implements ServerInte
         }
     }
 
+    protected function processSetting(): array
+    {
+        $setting = array_merge($this->defaultSetting(), $this->config['swoole'] ?? []);
+        return $setting;
+    }
+
+    protected function defaultSetting()
+    {
+        return [
+            'pid_file'          => '/tmp/hi-server.pid',
+            'log_file'          => '/tmp/hi.log',
+            'worker_num'        => 2,
+            'task_worker_num'   => 2,
+            'task_tmpdir'       => '/tmp',
+            'open_cpu_affinity' => true,
+        ];
+    }
+
     /**
-     * 返回 swoole server 实例
+     * 由子类实现，返回对应 swoole server 实例
+     * 
+     * 对于不同的实现子类，返回对应 server 实例，例如：
+     *  在 http 服务中，返回 \Swoole\Http\Server
+     *  在 tcp 服务中，返回 \Swoole\Tcp\Server
      *
      * @return \Swoole\Server
      */
