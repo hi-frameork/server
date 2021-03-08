@@ -97,12 +97,4 @@ abstract class AbstructServer
     }
 
     abstract public function start(int $port = 9527, string $host = '127.0.0.1');
-
-    abstract protected function createServerRequest();
-
-    abstract protected function parseUploadFiles(): array;
-
-    abstract protected function parseBody(): array;
-
-    abstract protected function parseHeaders(): array;
 }
