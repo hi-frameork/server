@@ -21,10 +21,10 @@ abstract class AbstructSwooleServer extends AbstructServer implements ServerInte
         $this->processPort($port);
         $this->processHost($host);
 
-        $this->swoole = $this->createServer();
+        $this->server = $this->createServer();
 
         $this->registerEventHandle();
-        $this->swoole->start();
+        $this->server->start();
     }
 
     public function restart(bool $force = false)
