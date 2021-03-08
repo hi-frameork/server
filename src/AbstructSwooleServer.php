@@ -27,6 +27,14 @@ abstract class AbstructSwooleServer extends AbstructServer implements ServerInte
         $this->swoole->start();
     }
 
+    public function restart(bool $force = false)
+    {
+    }
+
+    public function stop()
+    {
+    }
+
     protected function registerEventHandle()
     {
         foreach (get_class_methods($this) as $value) {

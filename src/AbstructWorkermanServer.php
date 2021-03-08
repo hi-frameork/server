@@ -27,6 +27,14 @@ abstract class AbstructWorkermanServer extends AbstructServer implements ServerI
         Worker::runAll();
     }
 
+    public function restart(bool $force = false)
+    {
+    }
+
+    public function stop()
+    {
+    }
+
     protected function registerEventHandle()
     {
         foreach (get_class_methods($this) as $value) {
