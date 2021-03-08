@@ -4,14 +4,6 @@ namespace Hi\Server;
 
 abstract class AbstructBuiltInServer extends AbstructServer
 {
-    public function restart(bool $force = false)
-    {
-    }
-
-    public function stop()
-    {
-    }
-
     protected function runHttpServer()
     {
         // 生成入口文件完整路径

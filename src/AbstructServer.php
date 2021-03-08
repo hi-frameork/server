@@ -4,7 +4,7 @@ namespace Hi\Server;
 
 use InvalidArgumentException;
 
-abstract class AbstructServer implements ServerInterface
+abstract class AbstructServer
 {
     /**
      * @var string
@@ -44,7 +44,7 @@ abstract class AbstructServer implements ServerInterface
      */
     public function version(): string
     {
-        return static::VERSION;
+        return ServerInterface::VERSION;
     }
     
     /**
@@ -95,6 +95,8 @@ abstract class AbstructServer implements ServerInterface
 
         return $config;
     }
+
+    abstract public function start(int $port = 9527, string $host = '127.0.0.1');
 
     abstract protected function createServerRequest();
 

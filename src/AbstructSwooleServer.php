@@ -4,12 +4,17 @@ namespace Hi\Server;
 
 use Swoole\Server;
 
-abstract class AbstructSwooleServer extends AbstructServer
+abstract class AbstructSwooleServer extends AbstructServer implements ServerInterface
 {
     /**
      * @var Server
      */
-    protected $swoole;
+    protected $server;
+
+    /**
+     * @var array
+     */
+    protected $eventHandle = [];
 
     public function start(int $port = 9527, string $host = '127.0.0.1'): void
     {
@@ -18,21 +23,17 @@ abstract class AbstructSwooleServer extends AbstructServer
 
         $this->swoole = $this->createServer();
 
-        $this->registerHandle();
+        $this->registerEventHandle();
         $this->swoole->start();
     }
 
-    protected function registerHandle()
+    protected function registerEventHandle()
     {
-        $handles = get_class_methods($this);
-
-        foreach ($handles as $value) {
-            if ('on' == substr($value, 0, 2)) {
-                $this->swoole->on(lcfirst(substr($value, 2)), [$this, $value]);
+        foreach (get_class_methods($this) as $value) {
+            if (in_array($value, $this->eventHandle)) {
+                $this->server->on(lcfirst(substr($value, 2)), [$this, $value]);
             }
         }
-
-        return $this;
     }
 
     /**

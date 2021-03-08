@@ -4,30 +4,37 @@ namespace Hi\Server;
 
 use Workerman\Worker;
 
-abstract class AbstructWorkermanServer extends AbstructServer
+abstract class AbstructWorkermanServer extends AbstructServer implements ServerInterface
 {
     /**
-     * @var string
+     * @var Worker
      */
-    protected $socketName;
+    protected $server;
+
+    /**
+     * @var array
+     */
+    protected $eventHandle = [];
 
     public function start(int $port = 9527, string $host = '127.0.0.1'): void
     {
         $this->processPort($port);
         $this->processHost($host);
 
-        $this->socketName = "http://{$this->host}:{$this->port}";
+        $this->server = $this->createServer();
 
-        $worker = new Worker($this->socketName);
-
-        $worker->onWorkerStart = [$this, 'onWorkerStart'];
-        $worker->onMessage = [$this, 'onMessage'];
-
+        $this->registerEventHandle();
         Worker::runAll();
     }
 
-    public function onWorkerStart()
+    protected function registerEventHandle()
     {
-        echo "Workerman http server is started at {$this->socketName}\n";
+        foreach (get_class_methods($this) as $value) {
+            if (in_array($value, $this->eventHandle)) {
+                $this->server->{$value} = [$this, $value];
+            }
+        }
     }
+
+    abstract protected function createServer();
 }
