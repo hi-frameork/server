@@ -31,12 +31,16 @@ abstract class AbstructWorkermanServer extends AbstructServer implements ServerI
     {
     }
 
-    public function stop()
+    public function stop(bool $force = false)
     {
     }
 
     protected function registerEventHandle()
     {
+        if (empty($this->eventHandle)) {
+            throw new InvalidArgumentException('无法启动服务，必须在 eventHandle 中设置事件');
+        }
+
         foreach (get_class_methods($this) as $value) {
             if (in_array($value, $this->eventHandle)) {
                 $this->server->{$value} = [$this, $value];
