@@ -31,7 +31,7 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         $this->processHost($host);
 
         if ($this->isRunning()) {
-            throw new RuntimeException("操作失败，服务已经运行在： {$this->host}:{$this->port}");
+            throw new RuntimeException("操作失败，服务已经运行在： {$this->host()}:{$this->port()}");
         }
 
         $this->server = $this->createServer();
@@ -53,6 +53,10 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
 
     public function stop(bool $force = false)
     {
+        if ($this->isRunning() === false) {
+            return true;
+        }
+
         if ($force) {
             exec("ps -ef | grep {$this->name} | grep -vE 'grep|watcher' | cut -c 9-15 | xargs kill -s 9");
         } else {
