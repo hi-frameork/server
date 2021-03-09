@@ -1,25 +1,29 @@
 {
     "name": "hi/server",
-    "description": "Hi 框架 Server 组件",
+    "description": "Hi \u6846\u67b6 Server \u7ec4\u4ef6",
     "type": "library",
     "license": "MIT",
     "authors": [
         {
-            "name": "热心网友",
+            "name": "\u70ed\u5fc3\u7f51\u53cb",
             "email": "anoxia@engineer.com"
         }
     ],
     "require": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "phpunit/phpunit": "^8.5"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12",
         "swoole/ide-helper": "^4.6",
-        "workerman/workerman": "^4.0"
+        "workerman/workerman": "^4.0",
+        "codeception/codeception": "^4.1",
+        "codeception/module-phpbrowser": "^1.0.0",
+        "codeception/module-asserts": "^1.0.0"
     },
     "suggest": {
-        "ext-swoole": "使用 Swoole 获取更高性能",
-        "workerman/workerman": "以 Workerman 作为运行容器，提升服务性能"
+        "ext-swoole": "\u4f7f\u7528 Swoole \u83b7\u53d6\u66f4\u9ad8\u6027\u80fd",
+        "workerman/workerman": "\u4ee5 Workerman \u4f5c\u4e3a\u8fd0\u884c\u5bb9\u5668\uff0c\u63d0\u5347\u670d\u52a1\u6027\u80fd"
     },
     "autoload": {
         "psr-4": {
@@ -29,6 +33,12 @@
     "autoload-dev": {
         "psr-4": {
             "Hi\\Server\\Tests\\": "tests/"
+        }
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer/"
         }
     }
 }
