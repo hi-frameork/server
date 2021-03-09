@@ -10,7 +10,7 @@ use Swoole\Server;
 /**
  * Swoole 运行容器基类
  */
-abstract class AbstructSwooleServer extends AbstructServer implements ServerInterface
+abstract class AbstractSwooleServer extends AbstractServer implements ServerInterface
 {
     /**
      * @var Server

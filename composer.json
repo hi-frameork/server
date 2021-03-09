@@ -32,7 +32,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Hi\\Server\\Tests\\": "tests/"
+            "Hi\\Server\\Tests\\Unit\\": "tests/unit/"
         }
     },
     "repositories": {

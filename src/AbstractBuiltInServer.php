@@ -10,7 +10,7 @@ namespace Hi\Server;
  *   此模式下运行容器只能用于本地开发时使用
  *   因性能不佳，严禁在生产环境使用！
  */
-abstract class AbstructBuiltInServer extends AbstructServer
+abstract class AbstractBuiltInServer extends AbstructServer
 {
     /**
      * 在环境内 host 与 port 上启动内建 Webserver

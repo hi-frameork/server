@@ -4,7 +4,7 @@ namespace Hi\Server;
 
 use Workerman\Worker;
 
-abstract class AbstructWorkermanServer extends AbstructServer implements ServerInterface
+abstract class AbstractWorkermanServer extends AbstractServer implements ServerInterface
 {
     /**
      * @var Worker

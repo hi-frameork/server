@@ -5,27 +5,21 @@ namespace Hi\Server;
 use InvalidArgumentException;
 use RuntimeException;
 
-abstract class AbstructServer
+abstract class AbstractServer
 {
     /**
-     * @var string
-     */
-    protected $host;
-
-    /**
-     * @var int
-     */
-    protected $port;
-
-    /**
+     * 默认结构： 
+     *  [
+     *      'host'      => null,
+     *      'port'      => null,
+     *      'name'      => null,
+     *      'swoole'    => [],
+     *      'workerman' => [],
+     *  ]
+     *
      * @var array
      */
     protected $config = [];
-
-    /**
-     * @var string
-     */
-    protected $name = 'hi-server';
 
     /**
      * @var callable
@@ -37,7 +31,7 @@ abstract class AbstructServer
      */
     public function __construct(array $config = [])
     {
-        $this->config = $this->processConfig($config);
+        $this->processConfig($config);
     }
 
     /**
@@ -57,6 +51,26 @@ abstract class AbstructServer
     {
         $this->handleRequest = $callback;
         return $this;
+    }
+
+    public function host()
+    {
+        return $this->config['host'] ?? '127.0.0.1';
+    }
+
+    public function port()
+    {
+        return $this->config['port'] ?? 9527;
+    }
+
+    public function name()
+    {
+        return $this->config['name'] ?? 'hi-server';
+    }
+
+    public function config()
+    {
+        return $this->config;
     }
 
     /**
@@ -91,7 +105,7 @@ abstract class AbstructServer
      */
     public function defaultPidFilePath(): string
     {
-        return $this->defaultRunDirectory() . $this->name . '.pid';
+        return $this->defaultRunDirectory() . $this->name() . '.pid';
     }
 
     /**
@@ -99,7 +113,7 @@ abstract class AbstructServer
      */
     public function defaultLogPath(): string
     {
-        return $this->defaultRunDirectory() . $this->name . '.log';
+        return $this->defaultRunDirectory() . $this->name() . '.log';
     }
 
     /**
@@ -114,7 +128,7 @@ abstract class AbstructServer
         }
 
         // 如果 $this->config 已设置 port，优先使用
-        $this->port = $this->port ?? $port;
+        $this->config['port'] = $this->config['port'] ?? $port;
     }
 
     /**
@@ -125,27 +139,25 @@ abstract class AbstructServer
     protected function processHost(string $host)
     {
         // 如果 $this->config 已设置 host，优先使用
-        $this->host = $this->host ?? $host;
+        $this->config['host'] = $this->config['host'] ?? $host;
     }
 
     /**
      * 检查 server 服务配置
      */
-    protected function processConfig(array $config): array
+    protected function processConfig(array $config)
     {
         // 从配置中提取公共参数，用于后续 server 的快速创建
-        $this->host = $config['host'] ?? null;
-        $this->port = $config['port'] ?? null;
+        $this->config['host'] = $config['host'] ?? null;
+        $this->config['port'] = $config['port'] ?? null;
 
         // 服务名称（用户设置 http 服务进程名）
-        $this->name = $config['name'] ?? $this->name;
+        $this->config['name'] = $config['name'] ?? null;
 
         // 对于不同 server 运行时，在配置中进行独立便于维护
         // 如果为传入对应配置，则使用 server 默认配置
-        $config['swoole']    = $config['swoole'] ?? [];
-        $config['workerman'] = $config['workerman'] ?? [];
-
-        return $config;
+        $this->config['swoole']    = $config['swoole'] ?? [];
+        $this->config['workerman'] = $config['workerman'] ?? [];
     }
 
     /**
