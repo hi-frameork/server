@@ -5,6 +5,15 @@ namespace Hi\Server;
 use InvalidArgumentException;
 use RuntimeException;
 
+use function is_dir;
+use function is_writable;
+use function rtrim;
+use function getcwd;
+use function strstr;
+use function mkdir;
+use function md5;
+use function sys_get_temp_dir;
+
 abstract class AbstractServer
 {
     /**
@@ -53,22 +62,36 @@ abstract class AbstractServer
         return $this;
     }
 
-    public function host()
+    /**
+     * 返回服务 host
+     */
+    public function host(): string
     {
         return $this->config['host'] ?? '127.0.0.1';
     }
 
+    /**
+     * 返回服务端口
+     *
+     * @return int
+     */
     public function port()
     {
         return $this->config['port'] ?? 9527;
     }
 
+    /**
+     * 返回服务名称（将用于设置进程名称）
+     */
     public function name()
     {
         return $this->config['name'] ?? 'hi-server';
     }
 
-    public function config()
+    /**
+     * 返回服务当前配置
+     */
+    public function config(): array
     {
         return $this->config;
     }
