@@ -63,15 +63,11 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
             Process::kill($this->getPid(), SIGTERM);
         }
 
-        while (true) {
+        do {
             if ($this->isRunning() === false) {
-                unlink($this->getPidFile());
-                if (is_file($this->getPidFile())) {
-                    throw new RuntimeException('进程 pid 文件删除失败');
-                }
                 break;
             }
-        }
+        } while (true);
 
         return true;
     }
@@ -122,8 +118,7 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
 
     protected function processSetting(): array
     {
-        $setting = array_merge($this->defaultSetting(), $this->config['swoole'] ?? []);
-        return $setting;
+        return array_merge($this->defaultSetting(), $this->config['swoole'] ?? []);
     }
 
     protected function defaultSetting()
