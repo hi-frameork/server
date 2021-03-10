@@ -14,8 +14,9 @@ use function mkdir;
 use function md5;
 use function sys_get_temp_dir;
 use function explode;
-use function exec;
-
+use function sleep;
+use function is_file;
+use function file_get_contents;
 
 abstract class AbstractServer
 {
@@ -97,6 +98,123 @@ abstract class AbstractServer
     public function config(): array
     {
         return $this->config;
+    }
+
+    /**
+     * 返回当前服务进程 ID
+     */
+    public function pid(): int
+    {
+        $pidFile = $this->pidFile();
+        if (! is_file($pidFile)) {
+            return 0;
+        }
+
+        $pid = @file_get_contents($pidFile);
+        if (! $pid) {
+            return 0;
+        }
+
+        return (int) $pid;
+    }
+
+    /**
+     * 返回当前服务运行状态
+     * 运行中返回 true，否则返回 false
+     */
+    public function isRunning()
+    {
+        if ($this->servicePidTree()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 等待检查服务状态
+     * 超过 30 秒没有结束是为服务停止失败
+     */
+    public function waitForStop()
+    {
+        $count = 0;
+        while (true) {
+            if (sleep(1) || $count++ > 30) {
+                throw new RuntimeException('操作失败，未检测到服务成功停止');
+            }
+            if ($this->isRunning() === false) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * 如果服务启动与结束过快子进程未完全启动
+     * 此时停止服务将会导致子进程孤立
+     * 所以此处等待时间延长，以尽可能确保进程都启动了
+     */
+    public function waitForStart()
+    {
+        $count = 0;
+        while (true) {
+            if (sleep(1) || $count++ > 30) {
+                throw new RuntimeException('操作失败，未检测到服务成功启动');
+            }
+            if ($this->isRunning() === true) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * 停止服务（强制）
+     */
+    public function shutdown(): bool
+    {
+        $pidtree = $this->servicePidTree();
+        if (! $pidtree) {
+            return true;
+        }
+
+        exec('kill -9 ' . implode(' ', array_keys($pidtree)));
+        $this->waitForStop();
+
+        return true;
+    }
+
+    /**
+     * 返回当前服务进程 ID 树
+     */
+    public function servicePidTree()
+    {
+        if ($this->pid() == 0) {
+            return [];
+        }
+
+        $tree = [];
+        $this->findPidTree($this->pid(), $tree);
+
+        return $tree;
+    }
+
+    /**
+     * 以递归方式查找指定 pid 下进程 pid 树
+     */
+    protected function findPidTree($pid, &$pids = [])
+    {
+        exec("ps -A -o pid,ppid | grep {$pid}", $output);
+
+        foreach ($output as $line) {
+            $data      = explode(' ', trim($line, ' '));
+            $childPid  = array_shift($data);
+            $parentPid = array_pop($data);
+
+            if ($childPid != $pid) {
+                $this->findPidTree($childPid, $pids);
+            }
+
+            $pids[$childPid] = $parentPid;
+        }
     }
 
     /**
@@ -187,39 +305,9 @@ abstract class AbstractServer
     }
 
     /**
-     * 以递归方式查找指定 pid 下进程 pid 树
+     * 返回服务进程 ID 所在的文件路径
      */
-    protected function findPidTreeByMasterPid($pid, &$pids = [])
-    {
-        exec("ps -A -o pid,ppid | grep {$pid}", $output);
-
-        foreach ($output as $line) {
-            $data      = explode(' ', trim($line, ' '));
-            $childPid  = array_shift($data);
-            $parentPid = array_pop($data);
-
-            if ($childPid != $pid) {
-                $this->findPidTreeByMasterPid($childPid, $pids);
-            }
-
-            $pids[$childPid] = $parentPid;
-        }
-    }
-
-    /**
-     * 返回服务进程 ID 树
-     */
-    public function servicePidTree($masterPid)
-    {
-        if ($masterPid == 0) {
-            return [];
-        }
-
-        $pidTree = [];
-        $this->findPidTreeByMasterPid($masterPid, $pidTree);
-
-        return $pidTree;
-    }
+    abstract public function pidFile(): string;
 
     /**
      * 服务启动，所有子类均应在各自的方法体内执行服务实例启动

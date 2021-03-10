@@ -7,6 +7,11 @@ use RuntimeException;
 use Swoole\Process;
 use Swoole\Server;
 
+use function get_class_methods;
+use function in_array;
+use function substr;
+use function array_merge;
+
 /**
  * Swoole 运行容器基类
  */
@@ -25,7 +30,7 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
     /**
      * 启动 swoole 服务
      */
-    public function start(int $port = 9527, string $host = '127.0.0.1'): void
+    public function start(int $port = 9527, string $host = '127.0.0.1')
     {
         $this->processPort($port);
         $this->processHost($host);
@@ -41,100 +46,29 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         $this->server->start();
     }
 
-    public function restart(bool $force = false)
+    public function reload()
     {
-        if ($force) {
-            $this->stop(true);
-            $this->start();
-        } else {
-            Process::kill($this->getPid(), SIGUSR1);
-        }
+        Process::kill($this->pid(), SIGUSR1);
+    }
+
+    public function restart()
+    {
+        $this->stop(true);
+        $this->start();
     }
 
     public function stop(bool $force = false)
     {
-        $pid = $this->getPid();
-
-        $pidtree = $this->servicePidTree($pid);
-        if (! $pidtree) {
-            return true;
-        }
-
-        if ($force) {
-            exec('kill -9 ' . implode(' ', array_keys($pidtree)));
-        } else {
-            Process::kill($pid, SIGTERM);
-        }
-
+        Process::kill($this->pid(), SIGTERM);
         // 等待进程完全退出
         $this->waitForStop();
 
         return true;
     }
 
-    /**
-     * 等待检查服务状态
-     * 超过 30 秒没有结束是为服务停止失败
-     */
-    public function waitForStop()
+    public function pidFile(): string
     {
-        $count = 0;
-        while (true) {
-            if (sleep(1) || $count++ > 30) {
-                throw new RuntimeException('操作失败，未检测到服务成功停止');
-            }
-            if ($this->isRunning() === false) {
-                break;
-            }
-        }
-    }
-
-    /**
-     * 如果服务启动与结束过快子进程未完全启动
-     * 此时停止服务将会导致子进程孤立
-     * 所以此处等待时间延长，以尽可能确保进程都启动了
-     */
-    public function waitForStart()
-    {
-        $count = 0;
-        while (true) {
-            if (sleep(1) || $count++ > 30) {
-                throw new RuntimeException('操作失败，未检测到服务成功启动');
-            }
-            if ($this->isRunning() === true) {
-                break;
-            }
-        }
-    }
-
-    public function getPid(): int
-    {
-        $pidFile = $this->getPidFile();
-        if (! is_file($pidFile)) {
-            return 0;
-        }
-
-        $pid = @file_get_contents($pidFile);
-        if (! $pid) {
-            return 0;
-        }
-
-        return (int) $pid;
-    }
-
-    public function getPidFile(): string
-    {
-        $setting = $this->processSetting();
-        return $setting['pid_file'] ?? '';
-    }
-
-    public function isRunning(): bool
-    {
-        if ($this->servicePidTree($this->getPid())) {
-            return true;
-        } else {
-            return false;
-        }
+        return $this->processSetting()['pid_file'] ?? '';
     }
 
     protected function registerEventHandle()
