@@ -53,35 +53,70 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
 
     public function stop(bool $force = false)
     {
-        if ($this->isRunning() === false) {
+        $pid = $this->getPid();
+
+        $pidtree = $this->servicePidTree($pid);
+        if (! $pidtree) {
             return true;
         }
 
         if ($force) {
-            exec("ps -ef | grep {$this->name} | grep -vE 'grep|watcher' | cut -c 9-15 | xargs kill -s 9");
+            exec('kill -9 ' . implode(' ', array_keys($pidtree)));
         } else {
-            Process::kill($this->getPid(), SIGTERM);
+            Process::kill($pid, SIGTERM);
         }
 
-        do {
-            if ($this->isRunning() === false) {
-                break;
-            }
-        } while (true);
+        // 等待进程完全退出
+        $this->waitForStop();
 
         return true;
     }
 
-    public function getPid()
+    /**
+     * 等待检查服务状态
+     * 超过 30 秒没有结束是为服务停止失败
+     */
+    public function waitForStop()
+    {
+        $count = 0;
+        while (true) {
+            if (sleep(1) || $count++ > 30) {
+                throw new RuntimeException('操作失败，未检测到服务成功停止');
+            }
+            if ($this->isRunning() === false) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * 如果服务启动与结束过快子进程未完全启动
+     * 此时停止服务将会导致子进程孤立
+     * 所以此处等待时间延长，以尽可能确保进程都启动了
+     */
+    public function waitForStart()
+    {
+        $count = 0;
+        while (true) {
+            if (sleep(1) || $count++ > 30) {
+                throw new RuntimeException('操作失败，未检测到服务成功启动');
+            }
+            if ($this->isRunning() === true) {
+                break;
+            }
+        }
+    }
+
+    public function getPid(): int
     {
         $pidFile = $this->getPidFile();
         if (! is_file($pidFile)) {
-            return false;
+            return 0;
         }
 
-        $pid = @file_get_contents($this->getPidFile());
+        $pid = @file_get_contents($pidFile);
         if (! $pid) {
-            return false;
+            return 0;
         }
 
         return (int) $pid;
@@ -95,12 +130,11 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
 
     public function isRunning(): bool
     {
-        $pid = $this->getPid();
-        if (! $pid) {
+        if ($this->servicePidTree($this->getPid())) {
+            return true;
+        } else {
             return false;
         }
-
-        return Process::kill($pid, SIG_DFL);
     }
 
     protected function registerEventHandle()

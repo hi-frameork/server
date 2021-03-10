@@ -14,8 +14,9 @@ class SwooleHttpServer extends AbstractSwooleServer
         'onStart',
     ];
 
-    public function onRequest()
+    public function onRequest($request, $response)
     {
+        $response->end('swoole');
     }
 
     public function onStart()

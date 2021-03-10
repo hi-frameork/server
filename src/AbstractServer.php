@@ -13,6 +13,9 @@ use function strstr;
 use function mkdir;
 use function md5;
 use function sys_get_temp_dir;
+use function explode;
+use function exec;
+
 
 abstract class AbstractServer
 {
@@ -181,6 +184,41 @@ abstract class AbstractServer
         // 如果为传入对应配置，则使用 server 默认配置
         $this->config['swoole']    = $config['swoole'] ?? [];
         $this->config['workerman'] = $config['workerman'] ?? [];
+    }
+
+    /**
+     * 以递归方式查找指定 pid 下进程 pid 树
+     */
+    protected function findPidTreeByMasterPid($pid, &$pids = [])
+    {
+        exec("ps -A -o pid,ppid | grep {$pid}", $output);
+
+        foreach ($output as $line) {
+            $data      = explode(' ', trim($line, ' '));
+            $childPid  = array_shift($data);
+            $parentPid = array_pop($data);
+
+            if ($childPid != $pid) {
+                $this->findPidTreeByMasterPid($childPid, $pids);
+            }
+
+            $pids[$childPid] = $parentPid;
+        }
+    }
+
+    /**
+     * 返回服务进程 ID 树
+     */
+    public function servicePidTree($masterPid)
+    {
+        if ($masterPid == 0) {
+            return [];
+        }
+
+        $pidTree = [];
+        $this->findPidTreeByMasterPid($masterPid, $pidTree);
+
+        return $pidTree;
     }
 
     /**
