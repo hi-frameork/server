@@ -34,11 +34,5 @@
         "psr-4": {
             "Hi\\Server\\Tests\\Unit\\": "tests/unit/"
         }
-    },
-    "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://mirrors.aliyun.com/composer/"
-        }
     }
-}
+
