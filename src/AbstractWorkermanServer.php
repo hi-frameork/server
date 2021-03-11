@@ -116,7 +116,6 @@ abstract class AbstractWorkermanServer extends AbstractServer implements ServerI
 
         global $argv;
         $argv[] = $command;
-        $argv[] = '-d';
     }
 
     /**
