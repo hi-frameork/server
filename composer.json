@@ -29,10 +29,6 @@
         "psr-4": {
             "Hi\\Server\\": "src/"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Hi\\Server\\Tests\\Unit\\": "tests/unit/"
-        }
     }
+}
 
