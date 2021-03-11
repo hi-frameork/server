@@ -6,6 +6,11 @@ use UnitTester;
 
 class DefaultConfigCest
 {
+    protected function createServer()
+    {
+        return new Server();
+    }
+
     // tests
     public function testGetConfig(UnitTester $I)
     {
@@ -17,45 +22,43 @@ class DefaultConfigCest
             'host'      => null,
             'port'      => null,
             'name'      => null,
+            'pid_file'  => null,
+            'log_file'  => null,
             'swoole'    => [],
             'workerman' => [],
         ];
 
-        $I->assertEquals($expected, $server->config());
+        $I->assertSame($expected, $server->config());
     }
 
     public function testGetHost(UnitTester $I)
     {
         $I->wantToTest('\Stubs\Server - getHost()');
 
-        $server = new Server();
-        $I->assertEquals('127.0.0.1', $server->host());
+        $I->assertEquals('127.0.0.1', $this->createServer()->host());
     }
 
     public function testGetPort(UnitTester $I)
     {
         $I->wantToTest('\Stubs\Server - getPort()');
 
-        $server = new Server();
-        $I->assertEquals(9527, $server->port());
+        $I->assertEquals(9527, $this->createServer()->port());
     }
 
     public function testGetName(UnitTester $I)
     {
         $I->wantToTest('\Stubs\Server - getName()');
 
-        $server = new Server();
-        $I->assertEquals('hi-server', $server->name());
+        $I->assertEquals('hi-server', $this->createServer()->name());
     }
 
     public function testGetDefaultRunDirectory(UnitTester $I)
     {
         $I->wantToTest('\Stubs\Server - defaultRunDirectory()');
 
-        $server = new Server();
         $I->assertEquals(
             getcwd() . '/../',
-            $server->defaultRunDirectory()
+            $this->createServer()->defaultRunDirectory()
         );
     }
 
@@ -63,7 +66,8 @@ class DefaultConfigCest
     {
         $I->wantToTest('\Stubs\Server - defaultLogPath()');
 
-        $server = new Server();
+        $server = $this->createServer();
+
         $I->assertEquals(
             $server->defaultRunDirectory() . $server->name() . '.log',
             $server->defaultLogPath()
@@ -74,7 +78,8 @@ class DefaultConfigCest
     {
         $I->wantToTest('\Stubs\Server - defaultPidFilePath()');
 
-        $server = new Server();
+        $server = $this->createServer();
+
         $I->assertEquals(
             $server->defaultRunDirectory() . $server->name() . '.pid',
             $server->defaultPidFilePath()

@@ -2,7 +2,6 @@
 
 namespace Hi\Server;
 
-use InvalidArgumentException;
 use RuntimeException;
 use Swoole\Process;
 use Swoole\Server;
@@ -23,11 +22,6 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
     protected $server;
 
     /**
-     * @var array
-     */
-    protected $eventHandle = [];
-
-    /**
      * 启动 swoole 服务
      */
     public function start(int $port = 9527, string $host = '127.0.0.1')
@@ -46,19 +40,32 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         $this->server->start();
     }
 
+    /**
+     * 平滑重启服务
+     */
     public function reload()
     {
         Process::kill($this->pid(), SIGUSR1);
     }
 
+    /**
+     * 强制重启服务
+     */
     public function restart()
     {
         $this->stop(true);
         $this->start();
     }
 
-    public function stop(bool $force = false)
+    /**
+     * 平滑停止服务
+     */
+    public function stop()
     {
+        if (! $this->isRunning()) {
+            return true;
+        }
+
         Process::kill($this->pid(), SIGTERM);
         // 等待进程完全退出
         $this->waitForStop();
@@ -66,16 +73,12 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         return true;
     }
 
-    public function pidFile(): string
-    {
-        return $this->processSetting()['pid_file'] ?? '';
-    }
-
+    /**
+     * 注册服务响应回调事件
+     */
     protected function registerEventHandle()
     {
-        if (empty($this->eventHandle)) {
-            throw new InvalidArgumentException('无法启动服务，必须在 eventHandle 中设置事件');
-        }
+        $this->checkEventHandle();
 
         foreach (get_class_methods($this) as $value) {
             if (in_array($value, $this->eventHandle)) {
@@ -84,17 +87,22 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         }
     }
 
+    /**
+     * 处理服务设置
+     */
     protected function processSetting(): array
     {
-        return array_merge($this->defaultSetting(), $this->config['swoole'] ?? []);
+        return array_merge($this->defaultSetting(), $this->config()['swoole'] ?? []);
     }
 
-    protected function defaultSetting()
+    /**
+     * 返回组建内置的默认服务设置
+     */
+    protected function defaultSetting(): array
     {
         return [
-            'log_file'          => $this->defaultLogPath(),
-            'pid_file'          => $this->defaultPidFilePath(),
-            'task_tmpdir'       => sys_get_temp_dir(),
+            'pid_file'          => $this->pidFile(),
+            'log_file'          => $this->logFile(),
             'open_cpu_affinity' => true,
         ];
     }

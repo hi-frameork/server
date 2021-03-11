@@ -7,11 +7,21 @@ use UnitTester;
 class StopCest extends CommonCest
 {
     // tests
-    public function testForceStop(UnitTester $I)
+    public function testStop(UnitTester $I)
     {
-        $I->wantToTest(SwooleHttpServer::class . ' - testForceStop()');
+        $I->wantToTest(SwooleHttpServer::class . ' - testStop()');
 
         $server = $this->startServer($this->setting);
-        $I->assertTrue($server->stop(true));
+
+        $I->assertTrue($server->stop());
+    }
+
+    public function testShutdown(UnitTester $I)
+    {
+        $I->wantToTest(SwooleHttpServer::class . ' - testShutdown()');
+
+        $server = $this->startServer($this->setting);
+
+        $I->assertTrue($server->shutdown());
     }
 }

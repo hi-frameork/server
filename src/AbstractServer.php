@@ -26,6 +26,8 @@ abstract class AbstractServer
      *      'host'      => null,
      *      'port'      => null,
      *      'name'      => null,
+     *      'pid_file'  => null,
+     *      'log_file'  => null,
      *      'swoole'    => [],
      *      'workerman' => [],
      *  ]
@@ -38,6 +40,11 @@ abstract class AbstractServer
      * @var callable
      */
     protected $handleRequest;
+
+    /**
+     * @var array<string>
+     */
+    protected $eventHandle = [];
 
     /**
      * Server Construct.
@@ -53,17 +60,6 @@ abstract class AbstractServer
     public function version(): string
     {
         return ServerInterface::VERSION;
-    }
-    
-    /**
-     * 注册请求处理回调
-     *
-     * @return static
-     */
-    public function withRequestHanle(callable $callback)
-    {
-        $this->handleRequest = $callback;
-        return $this;
     }
 
     /**
@@ -93,14 +89,6 @@ abstract class AbstractServer
     }
 
     /**
-     * 返回服务当前配置
-     */
-    public function config(): array
-    {
-        return $this->config;
-    }
-
-    /**
      * 返回当前服务进程 ID
      */
     public function pid(): int
@@ -119,12 +107,153 @@ abstract class AbstractServer
     }
 
     /**
+     * 返回服务进程 ID 所在的文件路径
+     */
+    public function pidFile(): string
+    {
+        return $this->config['pid_file'] ?? $this->defaultPidFilePath();
+    }
+
+    /**
+     * 返回服务运行日志目录
+     */
+    public function logFile(): string
+    {
+        return $this->config['log_file'] ?? $this->defaultLogPath();
+    }
+
+    /**
+     * 返回服务当前配置
+     */
+    public function config(): array
+    {
+        return $this->config;
+    }
+    
+    /**
+     * 注册请求处理回调
+     *
+     * @return static
+     */
+    public function withRequestHanle(callable $callback)
+    {
+        $this->handleRequest = $callback;
+        return $this;
+    }
+
+    /**
+     * 处理服务启动端口
+     *
+     * @return void
+     */
+    protected function processPort(int $port)
+    {
+        if ($port < 1 || $port > 65535) {
+            throw new InvalidArgumentException('端口无效，取值范围应 1 ~ 65535 之间');
+        }
+
+        // 如果 $this->config 已设置 port，优先使用
+        $this->config['port'] = $this->config['port'] ?? $port;
+    }
+
+    /**
+     * 处理服务启动 host
+     *
+     * @return void
+     */
+    protected function processHost(string $host)
+    {
+        // 如果 $this->config 已设置 host，优先使用
+        $this->config['host'] = $this->config['host'] ?? $host;
+    }
+
+    /**
+     * 检查 server 服务配置
+     */
+    protected function processConfig(array $config)
+    {
+        // 从配置中提取公共参数，用于后续 server 的快速创建
+        $this->config['host'] = $config['host'] ?? null;
+        $this->config['port'] = $config['port'] ?? null;
+
+        // 服务名称（用户设置 http 服务进程名）
+        $this->config['name'] = $config['name'] ?? null;
+
+        // 服务 pid 所在文件
+        $this->config['pid_file'] = $config['pid_file'] ?? null;
+        // 服务日志文件
+        $this->config['log_file'] = $config['log_file'] ?? null;
+
+        // 对于不同 server 运行时，在配置中进行独立便于维护
+        // 如果为传入对应配置，则使用 server 默认配置
+        $this->config['swoole']    = $config['swoole'] ?? [];
+        $this->config['workerman'] = $config['workerman'] ?? [];
+    }
+
+    /**
+     * 检查服务要绑定服务事件是否存在
+     *
+     * 例如
+     *  swoole http 服务至少需要 onRequest 事件
+     *  workerman 至少需要 onReceive 事件
+     */
+    protected function checkEventHandle()
+    {
+        if (empty($this->eventHandle)) {
+            throw new RuntimeException(
+                '无法启动服务，必须在 eventHandle 中设置对应服务事件'
+            );
+        }
+
+        foreach ($this->eventHandle as $method) {
+            if (! method_exists($this, $method)) {
+                throw new RuntimeException("无法启动服务，{$method} 方法未找到");
+            }
+        }
+    }
+
+    /**
+     * 以递归方式查找指定 pid 下进程 pid 树
+     */
+    protected function findServicePids($pid, &$pids = [])
+    {
+        exec("ps -A -o pid,ppid | grep {$pid}", $output);
+
+        foreach ($output as $line) {
+            $data      = explode(' ', trim($line, ' '));
+            $childPid  = array_shift($data);
+            $parentPid = array_pop($data);
+
+            if ($childPid != $pid) {
+                $this->findServicePids($childPid, $pids);
+            }
+
+            $pids[$childPid] = $parentPid;
+        }
+    }
+
+    /**
+     * 返回当前服务进程 ID 树
+     */
+    public function servicePids()
+    {
+        if ($this->pid() == 0) {
+            return [];
+        }
+
+        $tree = [];
+        $this->findServicePids($this->pid(), $tree);
+
+        return $tree;
+    }
+
+    /**
      * 返回当前服务运行状态
      * 运行中返回 true，否则返回 false
      */
     public function isRunning()
     {
-        if ($this->servicePidTree()) {
+        if ($this->servicePids()) {
             return true;
         } else {
             return false;
@@ -171,7 +300,7 @@ abstract class AbstractServer
      */
     public function shutdown(): bool
     {
-        $pidtree = $this->servicePidTree();
+        $pidtree = $this->servicePids();
         if (! $pidtree) {
             return true;
         }
@@ -180,41 +309,6 @@ abstract class AbstractServer
         $this->waitForStop();
 
         return true;
-    }
-
-    /**
-     * 返回当前服务进程 ID 树
-     */
-    public function servicePidTree()
-    {
-        if ($this->pid() == 0) {
-            return [];
-        }
-
-        $tree = [];
-        $this->findPidTree($this->pid(), $tree);
-
-        return $tree;
-    }
-
-    /**
-     * 以递归方式查找指定 pid 下进程 pid 树
-     */
-    protected function findPidTree($pid, &$pids = [])
-    {
-        exec("ps -A -o pid,ppid | grep {$pid}", $output);
-
-        foreach ($output as $line) {
-            $data      = explode(' ', trim($line, ' '));
-            $childPid  = array_shift($data);
-            $parentPid = array_pop($data);
-
-            if ($childPid != $pid) {
-                $this->findPidTree($childPid, $pids);
-            }
-
-            $pids[$childPid] = $parentPid;
-        }
     }
 
     /**
@@ -259,55 +353,6 @@ abstract class AbstractServer
     {
         return $this->defaultRunDirectory() . $this->name() . '.log';
     }
-
-    /**
-     * 处理服务启动端口
-     *
-     * @return void
-     */
-    protected function processPort(int $port)
-    {
-        if ($port < 1 || $port > 65535) {
-            throw new InvalidArgumentException('端口无效，取值范围应 1 ~ 65535 之间');
-        }
-
-        // 如果 $this->config 已设置 port，优先使用
-        $this->config['port'] = $this->config['port'] ?? $port;
-    }
-
-    /**
-     * 处理服务启动 host
-     *
-     * @return void
-     */
-    protected function processHost(string $host)
-    {
-        // 如果 $this->config 已设置 host，优先使用
-        $this->config['host'] = $this->config['host'] ?? $host;
-    }
-
-    /**
-     * 检查 server 服务配置
-     */
-    protected function processConfig(array $config)
-    {
-        // 从配置中提取公共参数，用于后续 server 的快速创建
-        $this->config['host'] = $config['host'] ?? null;
-        $this->config['port'] = $config['port'] ?? null;
-
-        // 服务名称（用户设置 http 服务进程名）
-        $this->config['name'] = $config['name'] ?? null;
-
-        // 对于不同 server 运行时，在配置中进行独立便于维护
-        // 如果为传入对应配置，则使用 server 默认配置
-        $this->config['swoole']    = $config['swoole'] ?? [];
-        $this->config['workerman'] = $config['workerman'] ?? [];
-    }
-
-    /**
-     * 返回服务进程 ID 所在的文件路径
-     */
-    abstract public function pidFile(): string;
 
     /**
      * 服务启动，所有子类均应在各自的方法体内执行服务实例启动

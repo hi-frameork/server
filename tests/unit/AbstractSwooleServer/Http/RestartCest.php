@@ -6,15 +6,15 @@ use Stubs\SwooleHttpServer;
 
 class RestartCest extends CommonCest
 {
-    public function testSoftRestart(UnitTester $I)
+    public function testReload(UnitTester $I)
     {
-        $I->wantToTest(SwooleHttpServer::class . ' - testSoftRestart()');
+        $I->wantToTest(SwooleHttpServer::class . ' - testReload()');
 
         $server = $this->startServer($this->setting);
 
-        $olodPidTree = $server->servicePidTree($server->getPid());
-        $server->restart();
-        $newPidTree = $server->servicePidTree($server->getPid());
+        $olodPidTree = $server->servicePids();
+        $server->reload();
+        $newPidTree = $server->servicePids();
 
         $I->assertNotSame($olodPidTree, $newPidTree);
     }

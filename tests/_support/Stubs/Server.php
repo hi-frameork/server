@@ -11,4 +11,9 @@ class Server extends AbstractServer
     public function start(int $port = 9527, string $host = '127.0.0.1')
     {
     }
+
+    public function pidFile(): string
+    {
+        return '';
+    }
 }

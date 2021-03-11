@@ -19,18 +19,22 @@ class CommonCest
 
     protected function startServer($setting)
     {
-        $server = new SwooleHttpServer($setting);
+        $server = $this->createServer($setting);
 
         if ($server->isRunning()) {
-            throw new RuntimeException('服务启动失败');
+            throw new RuntimeException('服务运行中，启动失败');
         }
         
-        $projectDir = strstr(__DIR__, 'tests', true);
-        $script     = $projectDir . 'tests/_support/Stubs/script/swoole-http-server.php';
-        $data       = str_replace('"', '\"', json_encode($setting));
-        $data       = str_replace(',', '\,', $data);
-        $cmd        = "php {$script} -arg={$data}";
+        $projectDir = $server->defaultRunDirectory();
+        $script     = $projectDir . '/server/tests/_support/Stubs/script/swoole-http-server.php';
+        
+        // 拼接要传入的特定参数
+        $data = str_replace('"', '\"', json_encode($setting));
+        $data = str_replace(',', '\,', $data);
+
+        // 启动服务
         // echo $cmd, PHP_EOL;
+        $cmd = "php {$script} -arg={$data}";
         exec($cmd, $output, $return);
 
         if ($return !== 0) {

@@ -14,6 +14,7 @@ class StartCest extends CommonCest
         $I->wantToTest(SwooleHttpServer::class . ' - testRunningStatus()');
 
         $server = $this->startServer($this->setting);
+
         $I->assertTrue($server->isRunning());
     }
 
@@ -25,7 +26,8 @@ class StartCest extends CommonCest
         $I->wantToTest(SwooleHttpServer::class . ' - testCheckPid()');
 
         $server = $this->startServer($this->setting);
-        $I->assertEquals(file_get_contents($server->getPidFile()), $server->getPid());
+        
+        $I->assertEquals(file_get_contents($server->pidFile()), $server->pid());
     }
 
     /**
