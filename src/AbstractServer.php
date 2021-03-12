@@ -172,16 +172,12 @@ abstract class AbstractServer
     protected function processConfig(array $config)
     {
         // 从配置中提取公共参数，用于后续 server 的快速创建
-        $this->config['host'] = $config['host'] ?? null;
-        $this->config['port'] = $config['port'] ?? null;
-
+        $this->config['host']        = $config['host'] ?? null;
+        $this->config['port']        = $config['port'] ?? null;
         // 服务名称（用户设置 http 服务进程名）
-        $this->config['name'] = $config['name'] ?? null;
-
-        // 服务 pid 所在文件
-        $this->config['pid_file'] = $config['pid_file'] ?? null;
-        // 服务日志文件
-        $this->config['log_file'] = $config['log_file'] ?? null;
+        $this->config['name']        = $config['name'] ?? null;
+        // 服务运行时目录
+        $this->config['runtime_dir'] = $config['runtime_dir'] ?? null;
 
         // 对于不同 server 运行时，在配置中进行独立便于维护
         // 如果为传入对应配置，则使用 server 默认配置
