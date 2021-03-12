@@ -110,7 +110,7 @@ abstract class AbstractServer
      */
     public function pidFile(): string
     {
-        return $this->config['pid_file'] ?? $this->defaultPidFilePath();
+        return $this->runtimeDirectory() . $this->name() . '.pid';
     }
 
     /**
@@ -118,7 +118,7 @@ abstract class AbstractServer
      */
     public function logFile(): string
     {
-        return $this->config['log_file'] ?? $this->defaultLogPath();
+        return $this->runtimeDirectory() . $this->name() . '.log';
     }
 
     /**
@@ -314,11 +314,11 @@ abstract class AbstractServer
      *
      * @return string
      */
-    public function defaultRunDirectory(): string
+    public function runtimeDirectory(): string
     {
         $path = $this->config['runtime_dir'] ?? null;
         if (is_dir($path)) {
-            return rtrim($path, '/');
+            return $path;
         }
 
         $path = rtrim((getcwd() ? getcwd() : strstr(__DIR__, 'vendor', true)), '/') . '/../';
@@ -336,22 +336,6 @@ abstract class AbstractServer
         }
 
         return $path;
-    }
-
-    /**
-     * 返回默认 pid file 文件路径
-     */
-    public function defaultPidFilePath(): string
-    {
-        return $this->defaultRunDirectory() . $this->name() . '.pid';
-    }
-
-    /**
-     * 返回默认服务运行日志文件路径
-     */
-    public function defaultLogPath(): string
-    {
-        return $this->defaultRunDirectory() . $this->name() . '.log';
     }
 
     /**
