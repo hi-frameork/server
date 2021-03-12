@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hi\Server;
+namespace Hi\Server\Runtime;
 
 use InvalidArgumentException;
 use Workerman\Worker;

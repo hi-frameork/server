@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hi\Server;
+namespace Hi\Server\Runtime;
 
 use RuntimeException;
-use Swoole\Process;
 use Swoole\Server;
 
 use function get_class_methods;
@@ -30,7 +29,9 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         $this->processHost($host);
 
         if ($this->isRunning()) {
-            throw new RuntimeException("操作失败，服务已经运行在： {$this->host()}:{$this->port()}");
+            throw new RuntimeException(
+                "操作失败，服务已经运行在： {$this->host()}:{$this->port()}"
+            );
         }
 
         $this->server = $this->createServer();
@@ -38,39 +39,6 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         $this->registerEventHandle();
         $this->server->set($this->processSetting());
         $this->server->start();
-    }
-
-    /**
-     * 平滑重启服务
-     */
-    public function reload()
-    {
-        Process::kill($this->pid(), SIGUSR1);
-    }
-
-    /**
-     * 强制重启服务
-     */
-    public function restart()
-    {
-        $this->stop(true);
-        $this->start();
-    }
-
-    /**
-     * 平滑停止服务
-     */
-    public function stop()
-    {
-        if (! $this->isRunning()) {
-            return true;
-        }
-
-        Process::kill($this->pid(), SIGTERM);
-        // 等待进程完全退出
-        $this->waitForStop();
-
-        return true;
     }
 
     /**
@@ -101,8 +69,8 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
     protected function defaultSetting(): array
     {
         return [
-            'pid_file'          => $this->pidFile(),
-            'log_file'          => $this->logFile(),
+            'pid_file'          => $this->processControl->pidFile(),
+            'log_file'          => $this->processControl->logFile(),
             'open_cpu_affinity' => true,
         ];
     }

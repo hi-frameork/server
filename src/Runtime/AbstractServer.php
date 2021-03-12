@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Hi\Server;
+namespace Hi\Server\Runtime;
 
+use Hi\Server\ProcessControl;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -44,6 +45,11 @@ abstract class AbstractServer
      * @var array<string>
      */
     protected $eventHandle = [];
+
+    /**
+     * @var ProcessControl
+     */
+    protected $processControl;
 
     /**
      * Server Construct.
