@@ -23,13 +23,12 @@ abstract class AbstractServer
     /**
      * 默认结构： 
      *  [
-     *      'host'      => null,
-     *      'port'      => null,
-     *      'name'      => null,
-     *      'pid_file'  => null,
-     *      'log_file'  => null,
-     *      'swoole'    => [],
-     *      'workerman' => [],
+     *      'host'        => null,
+     *      'port'        => null,
+     *      'name'        => null,
+     *      'runtime_dir' => null,
+     *      'swoole'      => [],
+     *      'workerman'   => [],
      *  ]
      *
      * @var array
@@ -321,6 +320,11 @@ abstract class AbstractServer
      */
     public function defaultRunDirectory(): string
     {
+        $path = $this->config['runtime_dir'] ?? null;
+        if (is_dir($path)) {
+            return rtrim($path, '/');
+        }
+
         $path = rtrim((getcwd() ? getcwd() : strstr(__DIR__, 'vendor', true)), '/') . '/../';
         if (is_dir($path) && is_writable($path)) {
             return $path;
