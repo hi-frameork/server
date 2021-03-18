@@ -28,7 +28,7 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
         $this->processPort($port);
         $this->processHost($host);
 
-        if ($this->isRunning()) {
+        if ($this->manager->isRunning()) {
             throw new RuntimeException(
                 "操作失败，服务已经运行在： {$this->host()}:{$this->port()}"
             );
