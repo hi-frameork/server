@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Hi\Server\Runtime;
+namespace Hi\Server;
 
 use RuntimeException;
 use Swoole\Server;
@@ -23,11 +23,8 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
     /**
      * 启动 swoole 服务
      */
-    public function start(int $port = 9527, string $host = '127.0.0.1')
+    public function start()
     {
-        $this->processPort($port);
-        $this->processHost($host);
-
         if ($this->manager->isRunning()) {
             throw new RuntimeException(
                 "操作失败，服务已经运行在： {$this->host()}:{$this->port()}"
@@ -69,8 +66,8 @@ abstract class AbstractSwooleServer extends AbstractServer implements ServerInte
     protected function defaultSetting(): array
     {
         return [
-            'pid_file'          => $this->processControl->pidFile(),
-            'log_file'          => $this->processControl->logFile(),
+            'pid_file'          => $this->manager->pidFile(),
+            'log_file'          => $this->manager->logFile(),
             'open_cpu_affinity' => true,
         ];
     }

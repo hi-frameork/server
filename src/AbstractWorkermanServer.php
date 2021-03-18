@@ -15,46 +15,12 @@ abstract class AbstractWorkermanServer extends AbstractServer implements ServerI
     /**
      * 启动 Workerman 服务
      */
-    public function start(int $port = 9527, string $host = '127.0.0.1'): void
+    public function start()
     {
-        $this->processPort($port);
-        $this->processHost($host);
-
         $this->setCommandToArgv('start');
         $this->server = $this->createServer();
         $this->registerEventHandle();
         $this->processSetting();
-        Worker::runAll();
-    }
-
-    /**
-     * 平滑重启服务
-     */
-    public function reload()
-    {
-        $this->setCommandToArgv('reload');
-        $this->server = $this->createServer();
-        $this->registerEventHandle();
-        Worker::runAll();
-    }
-
-    /**
-     * 强制重启服务
-     */
-    public function restart()
-    {
-        $this->stop();
-        $this->start();
-    }
-
-    /**
-     * 平滑停止服务
-     */
-    public function stop()
-    {
-        $this->setCommandToArgv('stop');
-        $this->server = $this->createServer();
-        $this->registerEventHandle();
         Worker::runAll();
     }
 
@@ -83,8 +49,8 @@ abstract class AbstractWorkermanServer extends AbstractServer implements ServerI
             return;
         }
 
-        $this->server::$pidFile   = $this->pidFile();
-        $this->server::$logFile   = $this->logFile();
+        $this->server::$pidFile   = $this->manager->pidFile();
+        $this->server::$logFile   = $this->manager->logFile();
         $this->server::$daemonize = $config['daemonize'] ?? false;
 
         if (isset($config['count'])) {

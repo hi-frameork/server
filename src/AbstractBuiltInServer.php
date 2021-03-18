@@ -13,6 +13,23 @@ namespace Hi\Server;
 abstract class AbstractBuiltInServer extends AbstractServer
 {
     /**
+     * 启动 HTTP 服务或处理客户端请求
+     */
+    public function start()
+    {
+        if ('cli' === php_sapi_name()) {
+            $this->runHttpServer();
+        } else {
+            $this->handle();
+        }
+    }
+
+    /**
+     * 执行请求处理
+     */
+    abstract public function handle();
+
+    /**
      * 在环境内 host 与 port 上启动内建 Webserver
      *
      * 相当于执行以下命令：

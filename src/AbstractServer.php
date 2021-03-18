@@ -1,8 +1,7 @@
 <?php declare(strict_types=1);
 
-namespace Hi\Server\Runtime;
+namespace Hi\Server;
 
-use Hi\Server\Manager;
 use InvalidArgumentException;
 use RuntimeException;
 
