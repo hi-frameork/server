@@ -40,17 +40,22 @@ abstract class AbstractBuiltInServer extends AbstractServer
     protected function runHttpServer()
     {
         // 拼接入口文件完整路径
-        $entryFilePath = rtrim($_SERVER['PWD'], DIRECTORY_SEPARATOR) 
-            . DIRECTORY_SEPARATOR 
-            . ltrim($_SERVER['SCRIPT_FILENAME'], DIRECTORY_SEPARATOR)
-        ;
+        $entryFilePath = rtrim($_SERVER['PWD'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR ;
+
+        // 如果存在 public/index.php 文件，将其作为请求u入口文件
+        $indexEntityFile = $entryFilePath . 'public' . DIRECTORY_SEPARATOR . 'index.php';
+        if (is_file($indexEntityFile)) {
+            $entryFile = $indexEntityFile;
+        } else {
+            $entryFile = $entryFilePath . ltrim($_SERVER['SCRIPT_FILENAME'], DIRECTORY_SEPARATOR);
+        }
 
         // 拼接 PHP 内建 Webserver 启动指令
         $command = sprintf('%s -S %s:%s %s',
             $this->phpExecutable(),
             $this->host(),
             $this->port(),
-            $entryFilePath
+            $entryFile
         );
 
         passthru($command);
