@@ -30,7 +30,7 @@ class Manager
     /**
      * Manager Construct
      */
-    public function __construct(string $name, string $runDir)
+    public function __construct(string $name, string $runDir = '')
     {
         $this->name = $name;
         $this->runtimeDirectory = $this->processRuntimeDirectory($runDir);

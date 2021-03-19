@@ -57,9 +57,13 @@ abstract class AbstractServer
             $this->withPort($config['port']);
         }
 
+        // 服务进程名称
+        $this->config['name']        = $config['name'] ?? 'hi-server';
+        // 服务运行时所在目录
+        $this->config['runtime_dir'] = $config['runtime_dir'] ?? '';
         // 对于不同 server 运行时，在配置中进行独立便于维护
-        $this->config['swoole']    = $config['swoole'] ?? [];
-        $this->config['workerman'] = $config['workerman'] ?? [];
+        $this->config['swoole']      = $config['swoole'] ?? [];
+        $this->config['workerman']   = $config['workerman'] ?? [];
     }
 
     /**
@@ -68,8 +72,8 @@ abstract class AbstractServer
     protected function createManager(): Manager
     {
         return new Manager(
-            $this->config['name'] ?? 'hi-server',
-            $this->config['runtime_dir'] ?? null
+            $this->config['name'],
+            $this->config['runtime_dir']
         );
     }
 
