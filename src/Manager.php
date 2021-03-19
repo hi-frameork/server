@@ -80,6 +80,8 @@ class Manager
 
     /**
      * 平滑重启服务
+     *
+     * @return void
      */
     public function reload()
     {
@@ -90,6 +92,8 @@ class Manager
 
     /**
      * 平滑停止服务
+     *
+     * @return void
      */
     public function stop()
     {
@@ -101,6 +105,8 @@ class Manager
 
     /**
      * 强制停止服务(强制杀掉服务相关所有进程)
+     *
+     * @return void
      */
     public function shutdown()
     {
@@ -130,6 +136,8 @@ class Manager
 
     /**
      * 以递归方式查找指定 pid 下进程 pid 树
+     *
+     * @return void
      */
     protected function findChildPids($pid, &$pids = [])
     {
@@ -162,6 +170,8 @@ class Manager
 
     /**
      * 阻塞等待进程启动
+     *
+     * @return void
      */
     public function waitForStart()
     {
@@ -178,6 +188,8 @@ class Manager
 
     /**
      * 阻塞等待进程停止
+     *
+     * @return void
      */
     public function waitForStop()
     {
@@ -221,5 +233,15 @@ class Manager
         }
 
         return $tempDir;
+    }
+    
+    /**
+     * 设置进程名称
+     *
+     * @return void
+     */
+    public function setProcessTitle(string $process)
+    {
+        cli_set_process_title($this->name . ': ' . $process);
     }
 }
