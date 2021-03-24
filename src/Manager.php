@@ -115,7 +115,7 @@ class Manager
             return;
         }
 
-        exec('kill -9 ' . implode(' ', array_keys($pids)));
+        exec('kill -9 ' . implode(' ', $pids));
         $this->waitForStop();
     }
 
