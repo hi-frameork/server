@@ -1,0 +1,33 @@
+{
+    "name": "hi/server",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hi\\Server\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hi\\Server\\Tests\\": "tests/"
+        }
+    },
+    "authors": [
+        {
+            "name": "russell",
+            "email": "anoxia@engineer.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "swoole/ide-helper": "4.8",
+        "phpstan/phpstan": "^1.8",
+        "phpunit/phpunit": "^9.5",
+        "workerman/workerman": "^4.0"
+    },
+    "suggest": {
+        "ext-soole": "Coroutine-based concurrency library for PHP"
+    }
+}
