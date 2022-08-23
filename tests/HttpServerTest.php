@@ -49,20 +49,27 @@ class HttpServerTest extends TestCase
     public function testStartSwooleServer()
     {
         $rest = file_get_contents(sprintf('http://%s:%d', $this->host, $this->port));
-        $this->assertSame('Hello Swoole', $rest);
+        $this->assertSame('hi-test', $rest);
     }
 
     public function testGetPid()
     {
         $server = SwooleMock::newInstance();
         $this->assertEquals(
-            file_get_contents($server->config()->getPidFile()),
-            $server->pid()
+            file_get_contents($server->getConfig()->get('pid_file')),
+            $server->getPid()
         );
     }
 
     public function testGetChildPids()
     {
-        $this->assertIsArray(SwooleMock::newInstance()->childPids());
+        $this->assertIsArray(SwooleMock::newInstance()->getChildPids());
+    }
+
+    public function testStop()
+    {
+        $server = SwooleMock::newInstance();
+        $server->stop();
+        $this->assertFalse($server->isRunning());
     }
 }

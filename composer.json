@@ -5,7 +5,7 @@
     "description": "Hi 框架组件，提供 Server 基础抽象能力",
     "autoload": {
         "psr-4": {
-            "Hi\\Server\\": "src/"
+            "Hi\\": "src/"
         }
     },
     "autoload-dev": {

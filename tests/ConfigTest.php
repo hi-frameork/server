@@ -7,21 +7,21 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigTest extends TestCase
 {
-    public function testDefaultConstruct()
+    public function testGetDefault()
     {
         $config = new Config();
-        $this->assertSame(
-            [
-                'name' => 'hi-server',
-                'host' => '0.0.0.0',
-                'port' => 9527,
-                'workerman' => [],
-                'swoole' => [],
-                'pid_file' => $config->getPidFile(),
-                'log_file' => $config->getLogFile(),
-            ],
-            $config->get()
-        );
+
+        $this->assertSame('hi-server', $config->get('name'));
+        $this->assertSame('0.0.0.0', $config->get('host'));
+        $this->assertSame(9527, $config->get('port'));
+        $this->assertSame([], $config->get('swoole'));
+        $this->assertSame([], $config->get('workerman'));
+
+        $pidFile = $config->defaultDirectory() . 'hi-server.pid';
+        $this->assertSame($pidFile, $config->get('pid_file'));
+
+        $logFile = $config->defaultDirectory() . 'hi-server.log';
+        $this->assertSame($logFile, $config->get('log_file'));
     }
 
     public function testConstruct()
@@ -36,53 +36,12 @@ class ConfigTest extends TestCase
 
         $config = new Config($values);
 
-        $this->assertEquals(
-            [
-                'name' => 'hi-test',
-                'host' => '127.0.0.1',
-                'port' => 9000,
-                'pid_file' => '/tmp/hi-test.pid',
-                'log_file' => '/tmp/hi-test.log',
-                'workerman' => [],
-                'swoole' => [],
-            ],
-            $config->get()
-        );
-    }
-
-    public function testProcessName()
-    {
-        $config = new Config(['name' => 'test-name']);
-        $this->assertSame('test-name', $config->get('name'));
-    }
-
-    public function testProcessHost()
-    {
-        $config = new Config(['host' => '127.0.0.1']);
-        $this->assertSame('127.0.0.1', $config->getHost());
-    }
-
-    public function testProcessPort()
-    {
-        $config = new Config(['port' => 3030]);
-        $this->assertSame(3030, $config->getPort());
-    }
-
-    public function testDefaultPidFile()
-    {
-        $config = new Config();
-        $this->assertSame(
-            $config->defaultDirectory() . $config->get('name') . '.pid',
-            $config->getPidFile()
-        );
-    }
-
-    public function testDefaultLogFile()
-    {
-        $config = new Config();
-        $this->assertSame(
-            $config->defaultDirectory() . $config->get('name') . '.log',
-            $config->getLogFile()
-        );
+        $this->assertSame($values['name'], $config->get('name'));
+        $this->assertSame($values['host'], $config->get('host'));
+        $this->assertSame($values['port'], $config->get('port'));
+        $this->assertSame($values['pid_file'], $config->get('pid_file'));
+        $this->assertSame($values['log_file'], $config->get('log_file'));
+        $this->assertSame([], $config->get('swoole'));
+        $this->assertSame([], $config->get('workerman'));
     }
 }

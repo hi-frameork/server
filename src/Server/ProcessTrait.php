@@ -1,30 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hi\Server;
 
-trait ServerTrait
-{
-    /**
-     * 注册服务响应回调事件
-     */
-    protected function collectionEventHandle(): void
-    {
-        foreach (get_class_methods($this) as $method) {
-            /** @var string $method */
-            if (substr($method, 0, 2) === 'on' && is_callable([$this, $method])) {
-                /** @var array<string, string> $target */
-                $target = [static::class, $method];
-                $this->eventHandle[lcfirst(substr($method, 2))] = $target;
-            }
-        }
-    }
+use function is_file;
+use function file_get_contents;
+use function array_keys;
+use function exec;
+use function sleep;
 
+trait ProcessTrait
+{
     /**
      * 返回进程 id
      */
-    public function pid(): int
+    public function getPid(): int
     {
-        $pidFile = $this->config->getPidFile();
+        $pidFile = $this->config->get('pid_file');
         if (! is_file($pidFile)) {
             return 0;
         }
@@ -42,15 +35,15 @@ trait ServerTrait
      *
      * @return int[]
      */
-    public function childPids(): array
+    public function getChildPids(): array
     {
-        if ($this->pid() == 0) {
+        if ($this->getPid() == 0) {
             return [];
         }
 
         /** @var array<int, int> */
         $pids = [];
-        $this->findChildPids($this->pid(), $pids);
+        $this->findChildPids($this->getPid(), $pids);
 
         /** @var int[] $result */
         $result = array_keys($pids);
@@ -80,10 +73,10 @@ trait ServerTrait
     /**
      * 判断当前进程/服务是否正在运行中
      */
-    protected function isRunning(): bool
+    public function isRunning(): bool
     {
         // @todo 应该加上对服务端口运行检测
-        if ($this->childPids()) {
+        if ($this->getChildPids()) {
             return true;
         } else {
             return false;

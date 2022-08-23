@@ -2,12 +2,10 @@
 
 namespace Hi\Server\Tests\Mocks\Http;
 
-use Hi\Server\SwooleServer;
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-use Swoole\Http\Server as SwooleHttpServer;
+use Hi\Server;
+use Swoole\Http\Server as HttpServer;
 
-class SwooleMock extends SwooleServer
+class SwooleMock extends Server
 {
     public static $defaultConfig = [
         'pid_file' => '/tmp/hi-test.pid',
@@ -24,15 +22,16 @@ class SwooleMock extends SwooleServer
      */
     protected function createServer()
     {
-        return new SwooleHttpServer(
-            $this->config->getHost(),
-            $this->config->getPort()
-        );
+        return new HttpServer($this->config->get('host'), $this->config->get('port'));
     }
 
-    public function onRequest(Request $request, Response $response)
+    public function start(): void
     {
-        $response->header('Content-Type', 'text/html; charset=utf-8');
-        $response->end('Hello Swoole');
+        $server = $this->createServer();
+        $server->set(static::$defaultConfig);
+        $server->on('request', function ($req, $res) {
+            $res->end('hi-test');
+        });
+        $server->start();
     }
 }

@@ -1,10 +1,20 @@
 <?php
 
-namespace Hi\Server;
+declare(strict_types=1);
+
+namespace Hi;
+
+use Hi\Server\Config;
+use Hi\Server\ProcessTrait;
+
+use function posix_kill;
+use function array_unshift;
+use function exec;
+use function implode;
 
 abstract class Server
 {
-    use ServerTrait;
+    use ProcessTrait;
 
     /**
      * Server config
@@ -12,14 +22,6 @@ abstract class Server
      * @var Config
      */
     protected $config;
-
-    /**
-     * Server 回调事件集合
-     * (也可用于查看已注册事件列表)
-     *
-     * @var array<string, array<string, string>>
-     */
-    protected $eventHandle = [];
 
     /**
      * Construct
@@ -31,12 +33,31 @@ abstract class Server
         $this->config = new Config($config);
     }
 
-    /**
-     * 返回 Config 配置对象
-     */
-    public function config(): Config
+    public function getConfig(): Config
     {
         return $this->config;
+    }
+
+    /**
+     * 设置服务 host
+     *
+     * @return $this
+     */
+    public function withHost(string $host)
+    {
+        $this->config->set('host', $this->config->processHost($host));
+        return $this;
+    }
+
+    /**
+     * 设置服务 port
+     *
+     * @return $this
+     */
+    public function withPort(int $port)
+    {
+        $this->config->set('port', $this->config->processPort($port));
+        return $this;
     }
 
     /**
@@ -50,7 +71,7 @@ abstract class Server
     public function reload(): void
     {
         if ($this->isRunning()) {
-            posix_kill($this->pid(), SIGUSR1);
+            posix_kill($this->getPid(), SIGUSR1);
         }
     }
 
@@ -60,7 +81,7 @@ abstract class Server
     public function stop(): void
     {
         if ($this->isRunning()) {
-            posix_kill($this->pid(), SIGTERM);
+            posix_kill($this->getPid(), SIGTERM);
             $this->waitForStop();
         }
     }
@@ -70,13 +91,13 @@ abstract class Server
      */
     public function shutdown(): void
     {
-        $pids = $this->childPids();
+        $pids = $this->getChildPids();
         if (! $pids) {
             return;
         }
 
         // 携带 Master 进程 PID
-        array_unshift($pids, $this->pid());
+        array_unshift($pids, $this->getPid());
 
         // 执行 kill -9 强制结束进程
         exec('kill -9 ' . implode(' ', $pids));
