@@ -26,7 +26,8 @@
         "swoole/ide-helper": "4.8",
         "phpstan/phpstan": "^1.8",
         "phpunit/phpunit": "^9.5",
-        "workerman/workerman": "^4.0"
+        "workerman/workerman": "^4.0",
+        "friendsofphp/php-cs-fixer": "^3.11"
     },
     "suggest": {
         "ext-soole": "Coroutine-based concurrency library for PHP"

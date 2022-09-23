@@ -4,6 +4,7 @@
 !.gitignore
 !.github
 
+composer
 /vendor
 
 .php-cs-fixer.cache
