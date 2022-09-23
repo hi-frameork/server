@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Hi;
 
+use function array_unshift;
+use function exec;
+
 use Hi\Server\Config;
 use Hi\Server\ProcessTrait;
 
-use function posix_kill;
-use function array_unshift;
-use function exec;
 use function implode;
+use function posix_kill;
 
 abstract class Server
 {
@@ -46,6 +47,7 @@ abstract class Server
     public function withHost(string $host)
     {
         $this->config->set('host', $this->config->processHost($host));
+
         return $this;
     }
 
@@ -57,6 +59,7 @@ abstract class Server
     public function withPort(int $port)
     {
         $this->config->set('port', $this->config->processPort($port));
+
         return $this;
     }
 
@@ -92,7 +95,7 @@ abstract class Server
     public function shutdown(): void
     {
         $pids = $this->getChildPids();
-        if (! $pids) {
+        if (!$pids) {
             return;
         }
 
@@ -105,4 +108,3 @@ abstract class Server
         $this->waitForStop();
     }
 }
-

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Hi\Server;
 
-use function is_file;
-use function file_get_contents;
 use function array_keys;
 use function exec;
+use function file_get_contents;
+use function is_file;
 use function sleep;
 
 trait ProcessTrait
@@ -18,12 +18,12 @@ trait ProcessTrait
     public function getPid(): int
     {
         $pidFile = $this->config->get('pid_file');
-        if (! is_file($pidFile)) {
+        if (!is_file($pidFile)) {
             return 0;
         }
 
         $pid = @file_get_contents($pidFile);
-        if (! $pid) {
+        if (!$pid) {
             return 0;
         }
 
@@ -54,7 +54,7 @@ trait ProcessTrait
     /**
      * 以递归方式查找指定 pid 下进程 pid 树
      *
-     * @param int $ppid
+     * @param int             $ppid
      * @param array<int, int> $pids
      */
     protected function findChildPids($ppid, &$pids = []): void
@@ -78,9 +78,9 @@ trait ProcessTrait
         // @todo 应该加上对服务端口运行检测
         if ($this->getChildPids()) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**

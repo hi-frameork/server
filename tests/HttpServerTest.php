@@ -18,9 +18,9 @@ class HttpServerTest extends TestCase
      */
     protected function setUp(): void
     {
-        $cliScript = __DIR__ . '/Mocks/Http/swoole_start_cli.php';
-        $descriptorspec = [0 => STDIN, 1 => STDOUT, 2 => STDERR,];
-        $cmd = "exec php ${cliScript} 2>/dev/null";
+        $cliScript        = __DIR__ . '/Mocks/Http/swoole_start_cli.php';
+        $descriptorspec   = [0 => STDIN, 1 => STDOUT, 2 => STDERR,];
+        $cmd              = "exec php ${cliScript} 2>/dev/null";
         $this->procHandle = proc_open($cmd, $descriptorspec, $pipes, __DIR__);
 
         $i = 0;

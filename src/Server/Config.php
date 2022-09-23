@@ -2,9 +2,9 @@
 
 namespace Hi\Server;
 
-use function sys_get_temp_dir;
-use function md5;
 use function array_key_exists;
+use function md5;
+use function sys_get_temp_dir;
 
 class Config
 {
@@ -25,12 +25,13 @@ class Config
      */
     public function __construct(array $config = [])
     {
-        $this->config['name'] = $this->processName($config['name'] ?? 'hi-server');
-        $this->config['host'] = $this->processHost($config['host'] ?? '0.0.0.0');
-        $this->config['port'] = $this->processPort($config['port'] ?? 9527);
-        $this->config['pid_file'] = $this->processPidFile($config['pid_file'] ?? null);
-        $this->config['log_file'] = $this->processLogFile($config['log_file'] ?? null);
-        $this->config['swoole'] = $config['swoole'] ?? [];
+        $this->config['runtime']   = $config['runtime'] ?? 'builtin';
+        $this->config['name']      = $this->processName($config['name'] ?? 'hi-server');
+        $this->config['host']      = $this->processHost($config['host'] ?? '0.0.0.0');
+        $this->config['port']      = $this->processPort($config['port'] ?? 9527);
+        $this->config['pid_file']  = $this->processPidFile($config['pid_file'] ?? null);
+        $this->config['log_file']  = $this->processLogFile($config['log_file'] ?? null);
+        $this->config['swoole']    = $config['swoole']    ?? [];
         $this->config['workerman'] = $config['workerman'] ?? [];
     }
 
@@ -55,7 +56,7 @@ class Config
     /**
      * 端口号预处理(验证)
      *
-     * @throws ServerException 
+     * @throws ServerException
      */
     public function processPort(int $value): int
     {
@@ -77,22 +78,22 @@ class Config
     /**
      * 预处理进程 pid 文件路径
      *
-     * @throws ServerException 
+     * @throws ServerException
      */
     protected function processPidFile(?string $value): string
     {
-        return $value 
+        return $value
             ?? $this->defaultDirectory() . $this->get('name') . '.pid';
     }
 
     /**
      * 预处理日志文件路径
      *
-     * @throws ServerException 
+     * @throws ServerException
      */
     protected function processLogFile(?string $value): string
     {
-        return $value 
+        return $value
             ?? $this->defaultDirectory() . $this->get('name') . '.log';
     }
 
@@ -100,11 +101,11 @@ class Config
      * 返回指定 key 对应 value，如果 key 为空返回所有
      *
      * @return mixed
-     * @throws ServerException 
+     * @throws ServerException
      */
     public function get(string $key = null)
     {
-        if (! $key) {
+        if (!$key) {
             return $this->config;
         }
 

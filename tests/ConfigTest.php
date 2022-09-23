@@ -27,9 +27,9 @@ class ConfigTest extends TestCase
     public function testConstruct()
     {
         $values = [
-            'name' => 'hi-test',
-            'port' => 9000,
-            'host' => '127.0.0.1',
+            'name'     => 'hi-test',
+            'port'     => 9000,
+            'host'     => '127.0.0.1',
             'pid_file' => '/tmp/hi-test.pid',
             'log_file' => '/tmp/hi-test.log',
         ];
