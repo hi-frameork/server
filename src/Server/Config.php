@@ -18,11 +18,6 @@ class Config
      *
      * @param array<string, mixed> $config
      */
-    /**
-     * Construct
-     *
-     * @param array<string, mixed> $config
-     */
     public function __construct(array $config = [])
     {
         $this->config['runtime']   = $config['runtime'] ?? 'builtin';
