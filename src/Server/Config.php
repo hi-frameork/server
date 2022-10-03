@@ -20,7 +20,6 @@ class Config
      */
     public function __construct(array $config = [])
     {
-        $this->config['runtime']   = $config['runtime'] ?? 'builtin';
         $this->config['name']      = $this->processName($config['name'] ?? 'hi-server');
         $this->config['host']      = $this->processHost($config['host'] ?? '0.0.0.0');
         $this->config['port']      = $this->processPort($config['port'] ?? 9527);
@@ -67,7 +66,7 @@ class Config
      */
     public function defaultDirectory(): string
     {
-        return sys_get_temp_dir() . '/' . md5(__DIR__) . '/';
+        return sys_get_temp_dir() . '/' . substr(md5(__DIR__), 0, 8) . '/';
     }
 
     /**
