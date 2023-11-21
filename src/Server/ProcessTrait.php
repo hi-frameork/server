@@ -59,7 +59,7 @@ trait ProcessTrait
      */
     protected function findChildPids($ppid, &$pids = []): void
     {
-        exec("ps -A -o pid,ppid | awk '$2==${ppid} {print $1}'", $output);
+        exec("ps -A -o pid,ppid | awk '$2=={$ppid} {print $1}'", $output);
 
         foreach ($output as $pid) {
             /** @var int $pid */

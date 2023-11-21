@@ -107,7 +107,7 @@ class Config
             return $this->config[$key];
         }
 
-        throw new ServerException("未找到 key[${key}] 对应 value");
+        throw new ServerException("未找到 key[{$key}] 对应 value");
     }
 
     /**
